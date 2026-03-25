@@ -2,28 +2,30 @@ from preprocessing import load_and_preprocess
 from model import create_sequences, build_model, scale_data
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
 
 # Load data
 df = load_and_preprocess("../data/consumption.csv", "../data/weather_hourly.csv")
 
-# Scale
+# Scale data
 scaled, scaler = scale_data(df)
 
-# Sequences
+# Create sequences
 X, y = create_sequences(scaled, 24)
 
-# Split
+# Split data
 split = int(0.8 * len(X))
 X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
 
-# Model
+# Build model
 model = build_model((X_train.shape[1], X_train.shape[2]))
 
-# Train
+# Train model
 es = EarlyStopping(patience=5, restore_best_weights=True)
 
-history = model.fit(
+model.fit(
     X_train, y_train,
     validation_data=(X_test, y_test),
     epochs=20,
@@ -34,7 +36,14 @@ history = model.fit(
 # Predictions
 predictions = model.predict(X_test)
 
-# Plot results
+# Evaluation metrics
+mae = mean_absolute_error(y_test, predictions)
+rmse = np.sqrt(mean_squared_error(y_test, predictions))
+
+print("MAE:", mae)
+print("RMSE:", rmse)
+
+# Plot graph
 plt.figure()
 plt.plot(y_test, label="Actual")
 plt.plot(predictions, label="Predicted")
@@ -45,4 +54,4 @@ plt.show()
 # Save model
 model.save("../model_energy.h5")
 
-print("✅ Training Complete & Graph Generated!")
+print("✅ Training Complete with Graph + Metrics!")
