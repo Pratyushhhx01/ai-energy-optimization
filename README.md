@@ -37,3 +37,5 @@ energy-optimization-aiml/
 │
 ├── requirements.txt
 └── README.md
+
+Project PDF link:https://drive.google.com/file/d/1Jm3eWhCIsX_SwwM58XMQrNF54pi6Qk-u/view?usp=drivesdk
